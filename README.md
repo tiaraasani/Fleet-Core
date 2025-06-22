@@ -1,61 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Fleet Core - Aplikasi Pemesanan Kendaraan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Deskripsi
+Fleet Core  adalah aplikasi backend pemesanan kendaraan dengan fitur approval berjenjang. Dibangun menggunakan Laravel 12 dan menggunakan autentikasi berbasis JWT (JSON Web Token). Backend ini menyediakan API endpoint yang dapat diakses melalui Postman untuk melakukan berbagai operasi seperti registrasi, login, membuat pemesanan kendaraan, persetujuan, dan ekspor data laporan.
 
-## About Laravel
+## Teknologi yang Digunakan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **PHP Version**: 8.4
+- **Framework**: Laravel 12
+- **Database**: MariaDB (Versi yang disarankan: 10.5+)
+- **Autentikasi**: JWT (JSON Web Token)
+- **Tool Pengujian API**: Postman
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Panduan Penggunaan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Instalasi
+1. Clone repositori:
+```bash
+git clone https://github.com/tiaraasani/Fleet-Core.git
+cd Fleet-Core
+```
 
-## Learning Laravel
+2. Install dependencies:
+```bash
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. Copy `.env.example` ke `.env` dan sesuaikan konfigurasi database:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+4. Jalankan migrasi dan seeder (opsional):
+```bash
+php artisan migrate --seed
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. Jalankan server:
+```bash
+php artisan serve
+```
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## API Endpoint (Contoh Request di Postman)
 
-### Premium Partners
+**1. Register**
+- `POST /api/auth/register`
+- Body (form-data): `name`, `email`, `password`, `password_confirmation`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**2. Login**
+- `POST /api/auth/login`
+- Body (form-data): `email`, `password`
+- Response: `access_token`, digunakan sebagai Bearer Token
 
-## Contributing
+**3. Create Order**
+- `POST /api/orders`
+- Headers: Authorization: Bearer `<token>`
+- Body (JSON):
+```json
+{
+  "vehicle_id": 3,
+  "driver_id": 1,
+  "date": "2025-06-22",
+  "destination": "Tambang A",
+  "approver_ids": [2, 3]
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**4. Approve Order**
+- `POST /api/approvals/{id}/approve`
+- Headers: Authorization: Bearer `<token>`
 
-## Code of Conduct
+**5. Pending Approvals**
+- `GET /api/approvals/pending`
+- Headers: Authorization: Bearer `<token>`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**6. Delete Order**
+- `DELETE /api/orders/{id}`
+- Headers: Authorization: Bearer `<token>`
 
-## Security Vulnerabilities
+**7. Update Order**
+- `PUT /api/orders/{id}`
+- Headers: Authorization: Bearer `<token>`
+- Body:
+```json
+{
+  "destination": "Jakarta Selatan",
+  "date": "2025-07-01"
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**8. Export Report**
+- `GET /api/reports/export?start=YYYY-MM-DD&end=YYYY-MM-DD`
+- Headers: Authorization: Bearer `<token>`
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Daftar Akun Testing
+
+| Role       | Email               | Password  |
+|------------|---------------------|-----------|
+| Admin      | admin@gmail.com     | 12345678  |
+| Approver 1 | approver1@gmail.com | 12345678  |
+| Driver     | driver1@gmail.com   | 12345678  |
+
+---
+
+## dokumentasi
+
+Diagram ERD dan Flowchart dapat dilihat di folder **public**
+
+## Kontak
+
+Untuk pertanyaan lebih lanjut, silakan hubungi nabila.mutiarasani@gmail.com
+
+
